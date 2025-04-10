@@ -1,0 +1,27 @@
+--liquibase formatted.sql
+--changeset michael.cawayan:CDM.FCH_ID_SEQ_PROC contextFilter:PH endDelimiter:/ runOnChange:true
+
+create or replace PROCEDURE CDM.FCH_ID_SEQ_PROC 
+AS
+    l_max_value NUMBER;
+BEGIN
+    
+    EXECUTE IMMEDIATE 'SELECT MAX(FCH_ID) FROM MONITOR.cie_future_contact_history' INTO l_max_value;
+
+    EXECUTE IMMEDIATE 'DROP SEQUENCE CDM.FCH_ID_SEQ';
+                          
+    EXECUTE IMMEDIATE 'CREATE SEQUENCE CDM.FCH_ID_SEQ START WITH ' || (l_max_value + 100) || ' INCREMENT BY 1 NOCACHE NOORDER NOCYCLE NOKEEP NOSCALE GLOBAL';
+END;
+/
+GRANT SELECT ON "CDM"."FCH_ID_SEQ" TO "INTEGRATION"
+/
+GRANT SELECT ON "CDM"."FCH_ID_SEQ" TO "HCI_RO_CDM"
+/
+GRANT EXECUTE ON "CDM"."FCH_ID_SEQ_PROC" TO "INTEGRATION"
+/
+GRANT EXECUTE ON "CDM"."FCH_ID_SEQ_PROC" TO "HCI_RO_CDM"
+/
+GRANT EXECUTE ON "CDM"."FCH_ID_SEQ_PROC" TO "MA_TEMP"
+/
+GRANT SELECT ON MONITOR.cie_future_contact_history TO CDM
+/
